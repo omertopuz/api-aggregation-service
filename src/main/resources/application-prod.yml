@@ -1,0 +1,10 @@
+server:
+  port: 8081
+
+backend-services:
+  base-url: http://backendservices:8080/
+
+spring:
+  data:
+    redis:
+      host: redis

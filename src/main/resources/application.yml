@@ -1,0 +1,22 @@
+server:
+  port: 8687
+
+app:
+  cache: in-memory
+
+spring:
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss.SSS"
+  data:
+    redis:
+      host: localhost
+      port: '6378'
+      ssl: false
+      lettuce:
+        pool:
+          max-idle: '8'
+          max-active: '8'
+          min-idle: '0'
+          max-wait: -1ms
+        shutdown-timeout: 100ms
+      password: pass
