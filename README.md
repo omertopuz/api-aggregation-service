@@ -25,6 +25,7 @@ If you want to activate distributed environment then run the application with th
 * Java17
 * Spring Boot
 * Maven 3
+* Redis
 * Docker
 
 ## Running the application locally ##

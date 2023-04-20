@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/")
+@RequestMapping("/aggregation")
 public class ConsolidatedApiController {
     private final ConsolidatedApiService consolidatedApiService;
     private final String pathPricing;
