@@ -79,7 +79,6 @@ class ApiRequestHandlerTest {
                     })
                 );
 
-        System.out.println(calculateDuration(current));
         assertTrue(calculateDuration(current) >= SLA_PER_ENDPOINT && calculateDuration(current) <= SLA_APPLICATION + 1);
         verify(backendServicesClient, times(endPointStatistics.size())).fetchBackendServicesResponse(any(),any());
     }

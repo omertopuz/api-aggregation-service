@@ -22,7 +22,7 @@ public class ApiRequestHandler {
     private final BackendServicesClient backendServicesClient;
     private final Integer bulkSize;
     private final Long maxWaitDurationBySeconds;
-    private final static int SCHEDULER_PERIOD = 10;
+    private final static int SCHEDULER_PERIOD = 5;
     private final RequestQueue requestQueue;
     private final ResponseMap responseMap;
 
@@ -37,8 +37,25 @@ public class ApiRequestHandler {
         this.responseMap = responseMap;
         this.requestQueue = requestQueue;
 
+        scheduleCombiningRequests();
+    }
+
+    private void scheduleCombiningRequests(){
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-        executorService.scheduleAtFixedRate(this::processCombinedRequest, 0, SCHEDULER_PERIOD, TimeUnit.MILLISECONDS);
+
+        Runnable scheduledTask = buildScheduledTask(this::processCombinedRequest);
+
+        executorService.scheduleAtFixedRate(scheduledTask, 0, SCHEDULER_PERIOD, TimeUnit.MILLISECONDS);
+    }
+
+    private Runnable buildScheduledTask(Runnable runnable){
+        return () -> {
+            try {
+                runnable.run();
+            } catch (Throwable e) {
+                log.error("An error occurred when combining requests", e);
+            }
+        };
     }
 
     public void addRequest(ConsolidatedApiRequest consolidatedApiRequest){
@@ -81,7 +98,9 @@ public class ApiRequestHandler {
     private void fetchResponses(String uriPath, List<ApiRequest> apiRequestList){
         backendServicesClient
                 .fetchBackendServicesResponse(uriPath, buildParams(apiRequestList))
-                .subscribe(responses-> apiRequestList.forEach(apiRequest-> putResponseToResponseMap(responses, apiRequest)));
+                .subscribe(responses-> apiRequestList
+                        .forEach(apiRequest->
+                                putResponseToResponseMap(responses, apiRequest)));
     }
 
     private void putResponseToResponseMap(Map responses, ApiRequest apiRequest){

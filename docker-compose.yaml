@@ -8,10 +8,10 @@ services:
       - '8081:8081'
     restart: always
     links:
-      - redis
+      - redisaggregationapi
     depends_on:
       - backendservices
-      - redis
+      - redisaggregationapi
     networks:
       - aggregation-network
 
@@ -20,14 +20,14 @@ services:
     container_name: backendservices
     restart: always
     ports:
-      - '8880:8080'
+      - '8080:8080'
     networks:
       - aggregation-network
 
-  redis:
+  redisaggregationapi:
     image: redis:6.2-alpine
-    container_name: redis
-    hostname: redis
+    container_name: redisaggregationapi
+    hostname: redisaggregationapi
     restart: always
     ports:
       - '6379:6379'
