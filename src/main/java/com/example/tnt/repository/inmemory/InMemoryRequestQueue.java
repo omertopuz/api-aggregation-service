@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class InMemoryRequestQueue implements RequestQueue {
     private final Map<String, ConcurrentLinkedQueue<ApiRequest>> requestQueueMap;
+    private final ReentrantLock reentrantLock = new ReentrantLock();
     public InMemoryRequestQueue() {
         this.requestQueueMap = new HashMap<>();
     }
@@ -17,9 +19,14 @@ public class InMemoryRequestQueue implements RequestQueue {
     @Override
     public void pushRequest(String queueName, ApiRequest apiRequest) {
         if (apiRequest != null){
-            if (!requestQueueMap.containsKey(queueName))
-                requestQueueMap.put(queueName, new ConcurrentLinkedQueue<>());
-            requestQueueMap.get(queueName).add(apiRequest);
+            reentrantLock.lock();
+            try {
+                if (!requestQueueMap.containsKey(queueName))
+                    requestQueueMap.put(queueName, new ConcurrentLinkedQueue<>());
+                requestQueueMap.get(queueName).add(apiRequest);
+            }finally {
+                reentrantLock.unlock();
+            }
         }
     }
 
